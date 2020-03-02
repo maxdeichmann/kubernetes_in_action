@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+ name: pod-with-host-pid-and-ipc 
+spec:
+ hostPID: true # You want the pod to use the host’s PID namespace.
+ hostIPC: true # You also want the pod to use the host’s IPC namespace.
+ containers:
+ - name: main
+   image: alpine
+   command: ["/bin/sleep", "999999"]

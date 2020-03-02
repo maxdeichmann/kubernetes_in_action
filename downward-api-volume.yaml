@@ -1,0 +1,53 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: downward
+  labels: # These labels and annotations will be exposed through the downwardAPI volume.
+    foo: bar
+  annotations:
+    key1: value1
+    key2: |
+      multi
+      line
+      value
+spec: 
+  containers: 
+  - name: main
+    image: busybox
+    command: ["sleep", "9999999"]
+    resources:
+      requests:
+        cpu: 15m
+        memory: 100Ki
+      limits:
+        cpu: 100m
+        memory: 20Mi
+    volumeMounts:
+      - name: downward 
+        mountPath: /etc/downward # You’re mounting the downward volume under /etc/downward.
+  volumes:
+  - name: downward # You’re defining a downwardAPI volume with the name downward.
+    downwardAPI:
+      items:
+      - path: "podName" # The pod’s name (from the metadata.name field in the manifest) will be written to the podName file.
+        fieldRef:
+          fieldPath: metadata.name 
+      - path: "podNamespace"
+        fieldRef:
+          fieldPath: metadata.namespace
+      - path: "labels" # The pod’s labels will be written to the /etc/downward/labels file.
+        fieldRef:
+          fieldPath: metadata.labels
+      - path: "annotations" # The pod’s annotations will be written to the /etc/downward/ annotations file.
+        fieldRef:
+          fieldPath: metadata.annotations
+      - path: "containerCpuRequestMilliCores" 
+        resourceFieldRef:
+          containerName: main 
+          resource: requests.cpu 
+          divisor: 1m
+      - path: "containerMemoryLimitBytes" 
+        resourceFieldRef:
+            containerName: main 
+            resource: limits.memory 
+            divisor: 1

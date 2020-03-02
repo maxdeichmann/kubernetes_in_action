@@ -1,0 +1,18 @@
+apiVersion: apps/v1 # Deployments are in the apps API group, version v1beta1.
+kind: Deployment # You’ve changed the kind from ReplicationController to Deployment
+metadata:
+  name: kubia # There’s no need to include the version in the name of the Deployment.
+spec:
+  selector:
+    matchLabels:
+      app: kubia
+  replicas: 3
+  template:
+    metadata:
+      name: kubia
+      labels:
+        app: kubia
+    spec:
+      containers:
+      - image: luksa/kubia:v1
+        name: nodejs
